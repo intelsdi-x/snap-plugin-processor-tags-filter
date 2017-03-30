@@ -2,7 +2,6 @@
 sudo: false
 language: go
 go:
-- 1.6.x
 - 1.7.x
 env:
   global:
@@ -14,7 +13,7 @@ env:
   - TEST_TYPE=build
 matrix:
   exclude:
-  - go: 1.6.x
+  - go: 1.7.x
     env: TEST_TYPE=build
 before_install:
 - "[[ -d $SNAP_PLUGIN_SOURCE ]] || mkdir -p $ORG_PATH && ln -s $TRAVIS_BUILD_DIR $SNAP_PLUGIN_SOURCE"
