@@ -1,0 +1,36 @@
+---
+version: 1
+schedule:
+  type: simple
+  interval: 1s
+max-failures: 1
+workflow:
+  collect:
+    tags:
+      "/intel/psutil/cpu/cpu-total/idle":
+        other: otherval
+        foo: fooval
+      "/intel/psutil/cpu/cpu-total/iowait":
+        baz: bazval
+      "/intel/psutil/cpu/cpu-total/stolen":
+        bar: barval
+        foo: valfoo
+        baz: otherval
+      "/intel/psutil/cpu/cpu-total/system":
+        bar: barval
+        foo: foovalue
+    metrics:
+      "/intel/psutil/cpu/cpu-total/idle": {}
+      "/intel/psutil/cpu/cpu-total/iowait": {}
+      "/intel/psutil/cpu/cpu-total/stolen": {}
+      "/intel/psutil/cpu/cpu-total/system": {}
+    process:
+    - plugin_name: tags-filter
+      config:
+        foo.allow: foovalue,fooval
+        baz.allow: bazval
+        bar.deny: barval
+      publish:
+      - plugin_name: file
+        config:
+          file: "/tmp/psutil-tags-filter-file.log"
