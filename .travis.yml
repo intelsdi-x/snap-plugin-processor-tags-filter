@@ -3,6 +3,7 @@ sudo: false
 language: go
 go:
 - 1.7.x
+- 1.8.x
 env:
   global:
   - ORG_PATH=/home/travis/gopath/src/github.com/intelsdi-x
