@@ -129,11 +129,6 @@ func parseRules(config plugin.Config) (map[string]*rule, error) {
 		}
 		values := strings.Split(sRule, valuesSeparator)
 
-		// There must be at least one value per rule
-		if len(values) == 0 {
-			return nil, fmt.Errorf("Rule must contain at least one value: %s", sRule)
-		}
-
 		// Check if any of values is empty
 		for _, value := range values {
 			if len(value) == 0 {

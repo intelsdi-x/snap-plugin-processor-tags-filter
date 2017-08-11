@@ -31,6 +31,21 @@ import (
 func TestTagsFilter(t *testing.T) {
 	tfp := NewTFProcessor()
 
+	Convey("Create tag processor", t, func() {
+		Convey("So tfp should not be nil", func() {
+			So(tfp, ShouldNotBeNil)
+		})
+		Convey("So tfp should be of type TFProcessor", func() {
+			So(tfp, ShouldHaveSameTypeAs, &TFProcessor{})
+		})
+		Convey("tfp.GetConfigPolicy should return a config policy", func() {
+			configPolicy, _ := tfp.GetConfigPolicy()
+			Convey("So config policy should be a plugin.ConfigPolicy", func() {
+				So(configPolicy, ShouldHaveSameTypeAs, plugin.ConfigPolicy{})
+			})
+		})
+	})
+
 	Convey("Test TagsFilter Processor", t, func() {
 		Convey("Process metrics with one allowed value per tag", func() {
 			config := plugin.Config{
@@ -253,6 +268,39 @@ func TestTagsFilter(t *testing.T) {
 			So(mts, ShouldHaveLength, 2)
 			So(mts[0].Data, ShouldEqual, 123)
 			So(mts[1].Data, ShouldEqual, 456)
+		})
+
+		Convey("Process metrics with empty config", func() {
+			config := plugin.Config{}
+			metrics := []plugin.Metric{
+				{
+					Namespace: plugin.NewNamespace("foo"),
+					Data:      123,
+					Tags:      map[string]string{"baz": "bazval"},
+				},
+			}
+			mts, err := tfp.Process(metrics, config)
+			So(mts, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(mts, ShouldHaveLength, 1)
+			So(mts[0].Data, ShouldEqual, 123)
+		})
+
+		Convey("Process metrics with wrong config", func() {
+			config := plugin.Config{
+				"foo.allow": 12,
+			}
+			metrics := []plugin.Metric{
+				{
+					Namespace: plugin.NewNamespace("foo"),
+					Data:      123,
+					Tags:      map[string]string{"baz": "bazval"},
+				},
+			}
+			mts, err := tfp.Process(metrics, config)
+			So(mts, ShouldBeNil)
+			So(err.Error(), ShouldEqual, "config item is not a string")
+			So(mts, ShouldHaveLength, 0)
 		})
 	})
 }
